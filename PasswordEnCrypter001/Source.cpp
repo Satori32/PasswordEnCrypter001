@@ -270,7 +270,7 @@ DType MD5(const Bytes& Data) {
 
 	return md5;
 }
-std::string MakePassCharacter(const std::string& S) {
+std::string MakeCryptCharacter(const std::string& S) {
 	std::string C;
 	for (std::size_t i = 0; i < S.size(); i++) {
 		if (S[i] == '.')continue;
@@ -283,14 +283,14 @@ std::string MakePassCharacter(const std::string& S) {
 
 DType YakiCrype(const std::string& S) {
 
-	std::string C = MakePassCharacter(S);
+	std::string C = MakeCryptCharacter(S);
 	std::string RH = ReversibleHash_Encode(S, C);
 	return MD5({ RH.begin(),RH.end() });
 }
 
-DType YakiCrype(const std::string& S,const std::string C) {
+DType YakiCrype(const std::string& S,const std::string& C) {
 
-	//std::string C = MakePassCharacter(S);
+	//std::string C = MakeCryptCharacter(S);
 	std::string RH = ReversibleHash_Encode(S, C);
 	
 	return MD5({ RH.begin(),RH.end() });
@@ -305,7 +305,7 @@ int main() {
 	std::cout << "Input:";
 	std::getline(std::cin, S);
 	std::cout << std::endl<< "...Input Aceppted!" << std::endl;
-	std::string C = MakePassCharacter(S);
+	std::string C = MakeCryptCharacter(S);
 
 	DType  RM= YakiCrype(S, C);
 
@@ -328,7 +328,7 @@ int main() {
 #else
 	std::tie(Mail, Pass) = GetInput();
 #endif
-	std::string C = MakePassCharacter(Mail);
+	std::string C = MakeCryptCharacter(Mail);
 
 	DType  RM= YakiCrype(Mail, C);
 	DType  RP= YakiCrype(Pass, C);
@@ -357,7 +357,7 @@ int main() {
 	std::tie(Mail, Pass) = GetInputByManual();
 	//std::tie(Mail, Pass) = GetInput();
 
-	std::string C=MakePassCharacter(Mail);
+	std::string C=MakeCryptCharacter(Mail);
 	std::string RM = ReversibleHash_Encode(Mail, C);
 	std::string RP = ReversibleHash_Encode(Pass, C);
 
