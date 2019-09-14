@@ -254,9 +254,10 @@ DType MD5(const Bytes& Data) {
 			}
 
 			F = F + A + K[i] + M[g];
+			A = D;
 			D = C;
 			C = B;
-			A = D;
+
 
 			B = B + LeftRotate(F, s[i]);
 		}
@@ -269,10 +270,85 @@ DType MD5(const Bytes& Data) {
 
 	return md5;
 }
+std::string MakePassCharacter(const std::string& S) {
+	std::string C;
+	for (std::size_t i = 0; i < S.size(); i++) {
+		if (S[i] == '.')continue;
+		if (S[i] == '@')continue;
+		auto it = std::find(C.begin(), C.end(), S[i]);
+		if (it == C.end()) { C += S[i]; }
+	}
+	return C;
+}
 
-//2019/0/14
+DType YakiCrype(const std::string& S) {
+
+	std::string C = MakePassCharacter(S);
+	std::string RH = ReversibleHash_Encode(S, C);
+	return MD5({ RH.begin(),RH.end() });
+}
+
+DType YakiCrype(const std::string& S,const std::string C) {
+
+	//std::string C = MakePassCharacter(S);
+	std::string RH = ReversibleHash_Encode(S, C);
+	
+	return MD5({ RH.begin(),RH.end() });
+}/**/
+#define DefValue
+int main() {
+	
+	std::cout << "I am \"YakiCrypt\" the StringCrypter." << std::endl<< std::endl;
+
+	std::string S;
+	std::cout << "Start Input. IF like a freeze. keyin By Input Device." << std::endl;
+	std::cout << "Input:";
+	std::getline(std::cin, S);
+	std::cout << std::endl<< "...Input Aceppted!" << std::endl;
+	std::string C = MakePassCharacter(S);
+
+	DType  RM= YakiCrype(S, C);
+
+	std::cout  << std::endl<< std::hex<<std::setfill('0') << std::setw(8);
+	for (auto& o : RM) { std::cout << o << ' '; }
+	std::cout << std::endl;
+
+	return 0;
+}
+/**/
+/** /
+#define DefValue
+int main() {
+
+	std::string Mail;
+	std::string Pass;
+
+#if !defined(DefValue)
+	std::tie(Mail, Pass) = GetInputByManual();
+#else
+	std::tie(Mail, Pass) = GetInput();
+#endif
+	std::string C = MakePassCharacter(Mail);
+
+	DType  RM= YakiCrype(Mail, C);
+	DType  RP= YakiCrype(Pass, C);
+
+	std::cout  << "Mail" << ' ' << std::hex<<std::setfill('0') << std::setw(8);
+	for (auto& o : RM) { std::cout << o << ' '; }
+	std::cout << std::endl;
+
+	std::cout << "Pass" << ' '<<std::setfill('0') << std::setw(8);
+	for (auto& o : RP) { std::cout << o << ' '; }
+	std::cout <<std::dec<< std::endl;
+
+	return 0;
+}
+/**/
+//2019/9/14
 //this MD5 function is modification to Wikipedia algorithm.
 //but not match to sample anther. i am confusing...
+
+/** /
 int main() {
 
 	std::string Mail;
@@ -281,15 +357,7 @@ int main() {
 	std::tie(Mail, Pass) = GetInputByManual();
 	//std::tie(Mail, Pass) = GetInput();
 
-	std::string T = Mail;
-	std::string C;
-	for (std::size_t i = 0; i < T.size(); i++) {
-		if (T[i] == '.')continue;
-		if (T[i] == '@')continue;
-		auto it = std::find(C.begin(), C.end(), T[i]);
-		if (it == C.end()) { C += T[i]; }
-	}
-
+	std::string C=MakePassCharacter(Mail);
 	std::string RM = ReversibleHash_Encode(Mail, C);
 	std::string RP = ReversibleHash_Encode(Pass, C);
 
@@ -313,3 +381,4 @@ int main() {
 
 	return 0;
 }
+/**/
